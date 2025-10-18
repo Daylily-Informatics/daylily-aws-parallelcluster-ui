@@ -21,6 +21,7 @@ import Accounting from './Accounting'
 import StackEvents from './StackEvents'
 import Instances from './Instances'
 import Filesystems from './Filesystems'
+import AnalysisWorksets from './AnalysisWorksets'
 import Scheduling from './Scheduling'
 import Properties from './Properties'
 import Loading from '../../components/Loading'
@@ -75,6 +76,11 @@ export default function ClusterTabs() {
             label: t('cluster.tabs.storage'),
             id: 'storage',
             content: <Filesystems />,
+          },
+          {
+            label: t('cluster.tabs.analysisWorksets'),
+            id: 'analysis-worksets',
+            content: <AnalysisWorksets />,
           },
           {
             label: t('cluster.tabs.scheduling'),

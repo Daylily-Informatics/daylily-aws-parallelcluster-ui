@@ -106,10 +106,41 @@
       "details": "Details",
       "instances": "Instances",
       "storage": "Storage",
+      "analysisWorksets": "Analysis worksets",
       "scheduling": "Job status",
       "accounting": "Accounting",
       "stackEvents": "Stack events",
       "costMonitoring": "Cost monitoring"
+    },
+    "analysisWorksets": {
+      "title": "Analysis worksets",
+      "loadingText": "Loading analysis worksets...",
+      "columns": {
+        "name": "Workset",
+        "units": "Unit count"
+      },
+      "actions": {
+        "refresh": "Refresh"
+      },
+      "filtering": {
+        "placeholder": "Find worksets",
+        "ariaLabel": "Find analysis worksets",
+        "countText": "Results: {{count}}",
+        "empty": {
+          "title": "No analysis worksets",
+          "subtitle": "No analysis worksets to display."
+        },
+        "noMatch": {
+          "title": "No matches",
+          "subtitle": "No analysis worksets match the filters.",
+          "clearFilter": "Clear filter"
+        }
+      },
+      "empty": {
+        "title": "No analysis worksets",
+        "subtitle": "No analysis worksets were found in the analysis results directory.",
+        "noHeadNodeSubtitle": "The head node must be running before analysis worksets can be retrieved."
+      }
     },
     "properties": {
       "title": "Properties",

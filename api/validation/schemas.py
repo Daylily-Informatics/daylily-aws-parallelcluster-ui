@@ -68,6 +68,15 @@ class QueueStatusSchema(Schema):
 QueueStatus = QueueStatusSchema(unknown=INCLUDE)
 
 
+class AnalysisWorksetsSchema(Schema):
+    user = fields.String(validate=validate.Length(max=64))
+    instance_id = fields.String(required=True, validate=validate.Length(max=60))
+    region = fields.String(required=True, validate=aws_region_validator)
+
+
+AnalysisWorksets = AnalysisWorksetsSchema(unknown=INCLUDE)
+
+
 class ScontrolJobSchema(Schema):
     user = fields.String(validate=validate.Length(max=64))
     instance_id = fields.String(required=True, validate=validate.Length(max=60))
