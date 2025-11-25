@@ -50,6 +50,7 @@ AUDIENCE = os.getenv("AUDIENCE")
 USER_ROLES_CLAIM = os.getenv("USER_ROLES_CLAIM", "cognito:groups")
 SSM_LOG_GROUP_NAME = os.getenv("SSM_LOG_GROUP_NAME")
 ARG_VERSION="version"
+ANALYSIS_RESULTS_BASE_PATH = "/fsx/analysis_results/ubuntu"
 
 try:
     if (not USER_POOL_ID or USER_POOL_ID == "") and SECRET_ID:
@@ -433,6 +434,54 @@ def queue_status():
     )
 
     return {"jobs": []} if jobs == "" else {"jobs": json.loads(jobs)}
+
+
+def analysis_worksets():
+    user = request.args.get("user", "ec2-user")
+    instance_id = request.args.get("instance_id")
+    region = request.args.get("region")
+
+    command = (
+        "python3 - <<\\\"PY\\\"\n"
+        "import json\n"
+        "import os\n"
+        f"base = {ANALYSIS_RESULTS_BASE_PATH!r}\n"
+        "results = []\n"
+        "if os.path.isdir(base):\n"
+        "    for name in sorted(os.listdir(base)):\n"
+        "        path = os.path.join(base, name)\n"
+        "        if not os.path.isdir(path):\n"
+        "            continue\n"
+        "        units_path = os.path.join(path, \"daylily-omics-analysis\", \"config\", \"units.tsv\")\n"
+        "        count = 0\n"
+        "        try:\n"
+        "            with open(units_path, \"r\", encoding=\"utf-8\") as units_file:\n"
+        "                lines = [line for line in units_file if line.strip()]\n"
+        "            count = max(len(lines) - 1, 0) if lines else 0\n"
+        "        except FileNotFoundError:\n"
+        "            count = 0\n"
+        "        except Exception:\n"
+        "            count = 0\n"
+        "        results.append({\"name\": name, \"unitsCount\": count})\n"
+        "print(json.dumps(results))\n"
+        "PY"
+    )
+
+    worksets = ssm_command(region, instance_id, user, command)
+    if isinstance(worksets, tuple):
+        return worksets
+
+    output = worksets.strip()
+    if not output:
+        return {"worksets": []}
+
+    try:
+        parsed = json.loads(output)
+    except json.JSONDecodeError:
+        logger.error("Unable to parse analysis worksets output: %s", output)
+        return {"message": "Unable to retrieve analysis worksets."}, 500
+
+    return {"worksets": parsed}
 
 
 def cancel_job():

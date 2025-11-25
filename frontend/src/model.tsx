@@ -811,6 +811,39 @@ function QueueStatus(
     })
 }
 
+async function GetAnalysisWorksets(
+  clusterName: string,
+  instanceId: string,
+  user?: string,
+) {
+  const region =
+    getState(['app', 'selectedRegion']) || getState(['aws', 'region'])
+  let url = `manager/analysis_worksets?instance_id=${instanceId}&region=${region}`
+  if (user) {
+    url += `&user=${encodeURIComponent(user)}`
+  }
+
+  try {
+    const response = await request('get', url)
+    if (response.status === 200) {
+      setState(
+        ['clusters', 'index', clusterName, 'analysisWorksets'],
+        response.data.worksets || [],
+      )
+    }
+  } catch (error) {
+    const axiosError = error as AxiosError
+    if (axiosError.response) {
+      console.log(axiosError.response)
+      const message =
+        (axiosError.response.data as {message?: string})?.message ||
+        axiosError.message
+      notify(`Error: ${message}`, 'error')
+    }
+    console.log(error)
+  }
+}
+
 function CancelJob(
   instanceId: any,
   user: any,
@@ -986,6 +1019,7 @@ export {
   LoadAwsConfig,
   GetDcvSession,
   QueueStatus,
+  GetAnalysisWorksets,
   CancelJob,
   SlurmAccounting,
   JobInfo,

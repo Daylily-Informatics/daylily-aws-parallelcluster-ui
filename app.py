@@ -18,6 +18,7 @@ import api.utils as utils
 from api.PclusterApiHandler import (
     authenticated,
     cancel_job,
+    analysis_worksets,
     create_user,
     delete_user,
     ec2_action,
@@ -45,8 +46,23 @@ from api.security.csrf import CSRF
 from api.security.csrf.csrf import csrf_needed
 from api.security.fingerprint import CognitoFingerprintGenerator
 from api.validation import validated, EC2Action
-from api.validation.schemas import CreateUser, DeleteUser, GetClusterConfig, GetCustomImageConfig, GetAwsConfig, GetInstanceTypes,\
-     Login, PushLog, PriceEstimate, GetDcvSession, QueueStatus, ScontrolJob, CancelJob, Sacct
+    from api.validation.schemas import (
+        CreateUser,
+        DeleteUser,
+        GetClusterConfig,
+        GetCustomImageConfig,
+        GetAwsConfig,
+        GetInstanceTypes,
+        Login,
+        PushLog,
+        PriceEstimate,
+        GetDcvSession,
+        QueueStatus,
+        ScontrolJob,
+        CancelJob,
+        Sacct,
+        AnalysisWorksets,
+    )
 
 ADMINS_GROUP = { "admin" }
 
@@ -163,6 +179,12 @@ def run():
     @validated(params=QueueStatus)
     def queue_status_():
         return queue_status()
+
+    @app.route("/manager/analysis_worksets")
+    @authenticated(ADMINS_GROUP)
+    @validated(params=AnalysisWorksets)
+    def analysis_worksets_():
+        return analysis_worksets()
 
     @app.route("/manager/cancel_job")
     @authenticated(ADMINS_GROUP)
